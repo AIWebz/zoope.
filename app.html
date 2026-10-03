@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Zoope — Create your avatar</title>
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Zoope">
+  <link rel="apple-touch-icon" href="assets/icon.svg">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo"><span class="logo-mark">Z</span>zoope</a>
+      <button class="btn btn-ghost btn-sm" id="resetAll" title="Delete your face, voice and connections">Reset</button>
+    </div>
+  </header>
+
+  <main class="container app-shell">
+    <div class="app-layout">
+      <!-- Step navigation: horizontal scroller on phones, sidebar on iPad landscape / desktop -->
+      <nav class="stepper" id="stepper">
+        <button class="step-btn active" data-step="face"><span class="dot">1</span>Scan face</button>
+        <button class="step-btn" data-step="voice"><span class="dot">2</span>Clone voice</button>
+        <button class="step-btn" data-step="connect"><span class="dot">3</span>Connect apps</button>
+        <button class="step-btn" data-step="meet"><span class="dot">4</span>Join a meeting</button>
+      </nav>
+
+      <div>
+        <!-- 1. FACE -->
+        <section class="panel active" id="panel-face" style="padding:0">
+          <h2>Scan your face</h2>
+          <p class="sub">Center your face in the oval, look straight ahead, and hold still for 3 seconds in good light.</p>
+          <div class="two-col">
+            <div>
+              <div class="stage" id="faceStage">
+                <div class="stage-msg" id="faceMsg"><div class="big">🙂</div>Tap <strong>Start camera</strong> to begin</div>
+                <video id="faceVideo" class="mirror hidden" playsinline muted autoplay></video>
+                <div class="face-guide hidden" id="faceGuide"></div>
+                <div class="scan-line"></div>
+              </div>
+              <div class="progress"><div id="faceProgress"></div></div>
+              <div class="controls">
+                <button class="btn btn-ghost" id="startCam">Start camera</button>
+                <button class="btn btn-primary" id="scanFace" disabled>Scan face</button>
+              </div>
+              <div class="status" id="faceStatus"></div>
+            </div>
+            <div>
+              <div class="stage" id="avatarStage">
+                <div class="stage-msg" id="avatarEmpty"><div class="big">🧑‍💻</div>Your animated avatar appears here</div>
+                <canvas id="avatarCanvas" width="480" height="640" class="hidden"></canvas>
+              </div>
+              <div class="controls">
+                <button class="btn btn-primary" id="toVoice" disabled>Next: clone voice →</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. VOICE -->
+        <section class="panel" id="panel-voice" style="padding:0">
+          <h2>Clone your voice</h2>
+          <p class="sub">Tap record and read the script below out loud in your normal speaking voice. About 20 seconds is enough.</p>
+          <div class="script-box" id="script">
+            Hi, I'm using Zoope to create my AI voice. I like to keep meetings short, clear and friendly.
+            Today is a great day to get things done. Let's review the plan, agree on next steps,
+            and make sure everyone knows who owns what. Thanks, everyone — talk soon!
+          </div>
+          <canvas class="wave" id="wave" width="1000" height="240" style="margin-top:16px"></canvas>
+          <div class="progress"><div id="voiceProgress"></div></div>
+          <div class="controls">
+            <button class="btn btn-primary" id="recBtn">● Record</button>
+            <button class="btn btn-ghost" id="playVoice" disabled>▶ Play sample</button>
+            <button class="btn btn-primary" id="toConnect" disabled>Next: connect apps →</button>
+          </div>
+          <div class="status" id="voiceStatus"></div>
+        </section>
+
+        <!-- 3. CONNECT -->
+        <section class="panel" id="panel-connect" style="padding:0">
+          <h2>Connect your meeting apps</h2>
+          <p class="sub">Zoope needs permission to join meetings as you. Connect at least one.</p>
+          <div class="conn-list" id="connList">
+            <div class="conn" data-app="zoom">
+              <div class="brand-badge brand-zoom">Z</div>
+              <div class="meta"><strong>Zoom</strong><span>Not connected</span></div>
+              <button class="btn btn-primary btn-sm">Connect</button>
+            </div>
+            <div class="conn" data-app="meet">
+              <div class="brand-badge brand-meet">M</div>
+              <div class="meta"><strong>Google Meet</strong><span>Not connected</span></div>
+              <button class="btn btn-primary btn-sm">Connect</button>
+            </div>
+            <div class="conn" data-app="teams">
+              <div class="brand-badge brand-teams">T</div>
+              <div class="meta"><strong>Microsoft Teams</strong><span>Not connected</span></div>
+              <button class="btn btn-primary btn-sm">Connect</button>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="btn btn-primary" id="toMeet" disabled>Next: join a meeting →</button>
+          </div>
+        </section>
+
+        <!-- 4. MEET -->
+        <section class="panel" id="panel-meet" style="padding:0">
+          <h2>Send your avatar to a meeting</h2>
+          <p class="sub">Paste a Zoom, Google Meet or Microsoft Teams link. Your Zoope avatar joins as you.</p>
+
+          <div class="two-col">
+            <div>
+              <label class="field" for="meetLink">Meeting link</label>
+              <input type="url" id="meetLink" inputmode="url" autocomplete="off"
+                     placeholder="https://zoom.us/j/123… or meet.google.com/abc-defg-hij">
+              <div class="status" id="linkStatus"></div>
+
+              <label class="field" for="displayName" style="margin-top:12px">Name shown in the meeting</label>
+              <input type="text" id="displayName" placeholder="Alex (Zoope AI)">
+
+              <div class="controls">
+                <button class="btn btn-primary" id="joinBtn" disabled>Send my avatar</button>
+                <button class="btn btn-danger hidden" id="leaveBtn">Leave meeting</button>
+              </div>
+              <ul class="timeline" id="timeline"></ul>
+            </div>
+
+            <div>
+              <div class="meeting-card" style="max-width:none">
+                <div class="meeting-top">
+                  <span id="meetLabel">Preview</span>
+                  <span id="meetPlatform"></span>
+                </div>
+                <div class="tile big" style="aspect-ratio:3/4;max-height:60vh">
+                  <canvas id="liveCanvas" width="480" height="640" style="width:100%;height:100%;object-fit:cover"></canvas>
+                  <span class="name" id="liveName">You (Zoope AI)</span>
+                  <span class="badge hidden" id="speakingBadge">SPEAKING</span>
+                </div>
+              </div>
+              <label class="field" for="sayText" style="margin-top:16px">What should your avatar say?</label>
+              <textarea id="sayText">Hi everyone, it's great to be here. I'll share a quick update on my project and then hand it back.</textarea>
+              <div class="controls">
+                <button class="btn btn-primary" id="sayBtn">🗣 Speak</button>
+                <button class="btn btn-ghost" id="sayVoiceSample">▶ Use my voice sample</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="notice">
+            <strong>Prototype note:</strong> face capture, voice recording, blinking and lip-sync run live in your browser.
+            Joining real meetings and cloned-voice speech require the Zoope backend (see README) — here they're simulated.
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/avatar.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
